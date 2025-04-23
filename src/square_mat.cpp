@@ -1,43 +1,35 @@
 #include "square_mat.hpp"
 #include <stdexcept>
-#include <iostream>
+#include <cmath>  // עבור std::fmod
 
-namespace Mat{
+namespace Mat {
 
 void SquareMat::allocate() {
-    data = new double*[size];  // Allocate memory for rows
+    data = new double*[size];
     for (int i = 0; i < size; ++i) {
-        data[i] = new double[size];  // Allocate memory for columns
+        data[i] = new double[size];
     }
 }
 
 void SquareMat::deallocate() {
     for (int i = 0; i < size; ++i) {
-        delete[] data[i];  // Deallocate each row
+        delete[] data[i];
     }
-    delete[] data;  // Deallocate the array of rows
+    delete[] data;
 }
 
 void SquareMat::copyDataFrom(const SquareMat& other) {
-    for (int i = 0; i < size; ++i) {
-        for (int j = 0; j < size; ++j) {
-            data[i][j] = other.data[i][j];  // Copy element-wise
-        }
-    }
+    for (int i = 0; i < size; ++i)
+        for (int j = 0; j < size; ++j)
+            data[i][j] = other.data[i][j];
 }
 
-SquareMat::SquareMat(int n) {
-    size = n;
+SquareMat::SquareMat(int n) : size(n) {
     allocate();
-    // Optionally initialize the matrix with specific values (like zeros)
-    for (int i = 0; i < size; ++i) {
-        for (int j = 0; j < size; ++j) {
-            data[i][j] = 0.0;  // Initialize all elements to 0
-        }
-    }
+    for (int i = 0; i < size; ++i)
+        for (int j = 0; j < size; ++j)
+            data[i][j] = 0.0;
 }
-
-
 
 SquareMat::~SquareMat() {
     deallocate();
@@ -59,64 +51,48 @@ SquareMat& SquareMat::operator=(const SquareMat& other) {
 }
 
 SquareMat SquareMat::operator+(const SquareMat& other) const {
-    if (size != other.size) {
-        throw std::invalid_argument("Matrix sizes must match for addition.");
-    }
+    if (size != other.size) throw std::invalid_argument("Matrix sizes must match for addition.");
     SquareMat result(size);
-    for (int i = 0; i < size; ++i) {
-        for (int j = 0; j < size; ++j) {
+    for (int i = 0; i < size; ++i)
+        for (int j = 0; j < size; ++j)
             result.data[i][j] = data[i][j] + other.data[i][j];
-        }
-    }
     return result;
 }
 
 SquareMat SquareMat::operator-(const SquareMat& other) const {
-    if (size != other.size) {
-        throw std::invalid_argument("Matrix sizes must match for subtraction.");
-    }
+    if (size != other.size) throw std::invalid_argument("Matrix sizes must match for subtraction.");
     SquareMat result(size);
-    for (int i = 0; i < size; ++i) {
-        for (int j = 0; j < size; ++j) {
+    for (int i = 0; i < size; ++i)
+        for (int j = 0; j < size; ++j)
             result.data[i][j] = data[i][j] - other.data[i][j];
-        }
-    }
     return result;
 }
 
 SquareMat SquareMat::operator-() const {
     SquareMat result(size);
-    for (int i = 0; i < size; ++i) {
-        for (int j = 0; j < size; ++j) {
+    for (int i = 0; i < size; ++i)
+        for (int j = 0; j < size; ++j)
             result.data[i][j] = -data[i][j];
-        }
-    }
     return result;
 }
 
 SquareMat SquareMat::operator*(const SquareMat& other) const {
-    if (size != other.size) {
-        throw std::invalid_argument("Matrix sizes must match for multiplication.");
-    }
+    if (size != other.size) throw std::invalid_argument("Matrix sizes must match for multiplication.");
     SquareMat result(size);
-    for (int i = 0; i < size; ++i) {
+    for (int i = 0; i < size; ++i)
         for (int j = 0; j < size; ++j) {
             result.data[i][j] = 0;
-            for (int k = 0; k < size; ++k) {
+            for (int k = 0; k < size; ++k)
                 result.data[i][j] += data[i][k] * other.data[k][j];
-            }
         }
-    }
     return result;
 }
 
 SquareMat SquareMat::operator*(double scalar) const {
     SquareMat result(size);
-    for (int i = 0; i < size; ++i) {
-        for (int j = 0; j < size; ++j) {
+    for (int i = 0; i < size; ++i)
+        for (int j = 0; j < size; ++j)
             result.data[i][j] = data[i][j] * scalar;
-        }
-    }
     return result;
 }
 
@@ -125,58 +101,47 @@ SquareMat operator*(double scalar, const SquareMat& mat) {
 }
 
 SquareMat SquareMat::operator%(const SquareMat& other) const {
-    if (size != other.size) {
-        throw std::invalid_argument("Matrix sizes must match for element-wise multiplication.");
-    }
+    if (size != other.size) throw std::invalid_argument("Matrix sizes must match for Hadamard product.");
     SquareMat result(size);
-    for (int i = 0; i < size; ++i) {
-        for (int j = 0; j < size; ++j) {
+    for (int i = 0; i < size; ++i)
+        for (int j = 0; j < size; ++j)
             result.data[i][j] = data[i][j] * other.data[i][j];
-        }
-    }
     return result;
 }
 
 SquareMat SquareMat::operator%(int scalar) const {
+    if (scalar == 0) throw std::invalid_argument("Cannot perform modulo with zero.");
     SquareMat result(size);
-    for (int i = 0; i < size; ++i) {
-        for (int j = 0; j < size; ++j) {
-            result.data[i][j] = static_cast<int>(data[i][j]) % scalar;
-        }
-    }
+    for (int i = 0; i < size; ++i)
+        for (int j = 0; j < size; ++j)
+            result.data[i][j] = std::fmod(data[i][j], scalar);
     return result;
 }
 
 SquareMat SquareMat::operator/(double scalar) const {
-    if (scalar == 0) {
-        throw std::invalid_argument("Cannot divide by zero.");
-    }
+    if (scalar == 0) throw std::invalid_argument("Cannot divide by zero.");
     SquareMat result(size);
-    for (int i = 0; i < size; ++i) {
-        for (int j = 0; j < size; ++j) {
+    for (int i = 0; i < size; ++i)
+        for (int j = 0; j < size; ++j)
             result.data[i][j] = data[i][j] / scalar;
-        }
-    }
     return result;
 }
 
 SquareMat SquareMat::operator^(int power) const {
-    if (power < 0) {
-        throw std::invalid_argument("Exponent must be non-negative.");
-    }
-    SquareMat result = *this;
-    for (int i = 1; i < power; ++i) {
-        result = result * *this;
-    }
+    if (power < 0) throw std::invalid_argument("Exponent must be non-negative.");
+    SquareMat result(size);
+    for (int i = 0; i < size; ++i)
+        for (int j = 0; j < size; ++j)
+            result.data[i][j] = (i == j ? 1.0 : 0.0);
+    for (int p = 0; p < power; ++p)
+        result = result * (*this);
     return result;
 }
 
 SquareMat& SquareMat::operator++() {
-    for (int i = 0; i < size; ++i) {
-        for (int j = 0; j < size; ++j) {
+    for (int i = 0; i < size; ++i)
+        for (int j = 0; j < size; ++j)
             ++data[i][j];
-        }
-    }
     return *this;
 }
 
@@ -187,11 +152,9 @@ SquareMat SquareMat::operator++(int) {
 }
 
 SquareMat& SquareMat::operator--() {
-    for (int i = 0; i < size; ++i) {
-        for (int j = 0; j < size; ++j) {
+    for (int i = 0; i < size; ++i)
+        for (int j = 0; j < size; ++j)
             --data[i][j];
-        }
-    }
     return *this;
 }
 
@@ -203,25 +166,19 @@ SquareMat SquareMat::operator--(int) {
 
 SquareMat SquareMat::operator~() const {
     SquareMat result(size);
-    for (int i = 0; i < size; ++i) {
-        for (int j = 0; j < size; ++j) {
-            result.data[i][j] = data[j][i];  // Transpose the matrix
-        }
-    }
+    for (int i = 0; i < size; ++i)
+        for (int j = 0; j < size; ++j)
+            result.data[i][j] = data[j][i];
     return result;
 }
 
 double* SquareMat::operator[](int index) {
-    if (index < 0 || index >= size) {
-        throw std::out_of_range("Index out of bounds.");
-    }
+    if (index < 0 || index >= size) throw std::out_of_range("Index out of bounds.");
     return data[index];
 }
 
 bool SquareMat::operator==(const SquareMat& other) const {
-    if (size != other.size) {
-        return false;
-    }
+    if (size != other.size) return false;
     return sum() == other.sum();
 }
 
@@ -247,35 +204,28 @@ bool SquareMat::operator>=(const SquareMat& other) const {
 
 double SquareMat::sum() const {
     double total = 0;
-    for (int i = 0; i < size; ++i) {
-        for (int j = 0; j < size; ++j) {
+    for (int i = 0; i < size; ++i)
+        for (int j = 0; j < size; ++j)
             total += data[i][j];
-        }
-    }
     return total;
 }
 
 double SquareMat::determinant() const {
-    if (size == 1) {
-        return data[0][0];
-    }
-
+    if (size == 1) return data[0][0];
     double det = 0;
     for (int p = 0; p < size; ++p) {
-        SquareMat subMat(size - 1);  // Submatrix for cofactor expansion
+        SquareMat subMat(size - 1);
         for (int i = 1; i < size; ++i) {
-            int subMatCol = 0;
+            int colIndex = 0;
             for (int j = 0; j < size; ++j) {
                 if (j == p) continue;
-                subMat.data[i - 1][subMatCol] = data[i][j];
-                ++subMatCol;
+                subMat.data[i - 1][colIndex++] = data[i][j];
             }
         }
-        det += (p % 2 == 0 ? 1 : -1) * data[0][p] * subMat.determinant();  // Cofactor expansion
+        det += (p % 2 == 0 ? 1 : -1) * data[0][p] * subMat.determinant();
     }
     return det;
 }
-
 
 SquareMat& SquareMat::operator+=(const SquareMat& other) {
     *this = *this + other;
@@ -304,11 +254,11 @@ SquareMat& SquareMat::operator%=(int scalar) {
 
 std::ostream& operator<<(std::ostream& os, const SquareMat& mat) {
     for (int i = 0; i < mat.size; ++i) {
-        for (int j = 0; j < mat.size; ++j) {
-            os << mat.data[i][j] << " ";  // Print each element followed by a space
-        }
-        os << std::endl;  // Move to the next line after printing a row
+        for (int j = 0; j < mat.size; ++j)
+            os << mat.data[i][j] << " ";
+        os << '\n';
     }
     return os;
 }
+
 }
