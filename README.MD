@@ -3,7 +3,7 @@
 Email: yanivg1000@gmail.com
 
 ## Overview
-This project implements a fully functional SquareMat class for square matrices of doubles, supporting a wide range of matrix operations.
+This project implements a fully functional SquareMat class for square matrices, supporting a wide range of matrix operations.
 The matrices are dynamically allocated, and the class manages all memory safely.
 
 ## Features
