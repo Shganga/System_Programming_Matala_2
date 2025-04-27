@@ -1,3 +1,4 @@
+//yanivg1000@gmail.com
 #include "square_mat.hpp"
 #include <iostream>
 

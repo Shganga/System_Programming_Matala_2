@@ -1,3 +1,4 @@
+#yanivg1000@gmail.com
 CXX = clang++
 CXXFLAGS = -Wall -std=c++17 -g -I src
 
